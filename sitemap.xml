@@ -72,20 +72,6 @@
   </url>
   
   <url>
-    <loc>https://ja99-doge.github.io/tags/%E5%AD%B8%E7%BF%92/</loc>
-    <lastmod>2022-12-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ja99-doge.github.io/tags/%E8%B7%AF%E7%B7%9A%E5%9C%96/</loc>
-    <lastmod>2022-12-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://ja99-doge.github.io/tags/%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83/</loc>
     <lastmod>2022-12-02</lastmod>
     <changefreq>weekly</changefreq>
@@ -108,6 +94,20 @@
   
   <url>
     <loc>https://ja99-doge.github.io/tags/Sui%E5%AE%89%E8%A3%9D%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83/</loc>
+    <lastmod>2022-12-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/tags/%E5%AD%B8%E7%BF%92/</loc>
+    <lastmod>2022-12-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/tags/%E8%B7%AF%E7%B7%9A%E5%9C%96/</loc>
     <lastmod>2022-12-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
