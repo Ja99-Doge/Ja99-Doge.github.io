@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://ja99-doge.github.io/images/sui_client/sui_keytool_help.png">
 <meta property="og:image" content="https://ja99-doge.github.io/images/sui_client/sui_move_help.png">
 <meta property="article:published_time" content="2022-12-02T05:05:14.000Z">
-<meta property="article:modified_time" content="2022-12-10T02:02:41.246Z">
+<meta property="article:modified_time" content="2022-12-10T02:17:42.022Z">
 <meta property="article:author" content="JA99">
 <meta property="article:tag" content="Sui">
 <meta property="article:tag" content="學習">
@@ -61,7 +61,19 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 6.3.0"></head>
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="/custom_css_source.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -193,8 +205,8 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sui client objects 0x5ebbb4b6fb9bcee7db67f52a394d3964be0e4140</span><br></pre></td></tr></table></figure>
 
 <p>日後會分享怎麼用Sui Move撰寫智能合約，這邊可以先看一下如果你<strong>寫好了智能合約，要怎麼發佈到Sui的鏈上</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sui client publish --path $PATH_TO_PACKAGE/my_move_package --gas-budget 30000</span><br></pre></td></tr></table></figure>
-<p><code>--path</code>是放move package的路徑<br><code>--gas-budget</code>是手續費的上限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sui client publish --gas-budget 30000 $PATH_TO_PACKAGE</span><br></pre></td></tr></table></figure>
+<p><code>--gas-budget</code>是手續費的上限<br>最後面是package的路徑</p>
 <h2 id="sui-keytool"><a href="#sui-keytool" class="headerlink" title="sui keytool"></a>sui keytool</h2><p><img src="/images/sui_client/sui_keytool_help.png" alt="sui keytool help"></p>
 <p><code>sui keytool</code>負責管理sui client使用的地址和私鑰</p>
 <p>如果你<strong>本來已經有助憶詞，並且想要導入到sui client</strong>，你可以用<code>sui keytool</code>的以下命令</p>
