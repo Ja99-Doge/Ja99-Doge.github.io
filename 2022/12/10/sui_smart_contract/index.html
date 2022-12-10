@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="google-site-verification" content="6HxMxmAma9fDtXHX6dJW1c1GmDBkaylZ0BE-9Ui-hHQ" />
+    <meta name="description" content="本篇文章要分享怎麼用Sui Move開發智能合約，並且在Sui上發佈你第一個智能合約！ 就算不太知道Move怎麼寫，也可以照抄一遍，相信就會對Move和Sui有進一步的了解，那我們開始吧！ 事前準備首先我們要先安裝好Sui的程式，若是還沒安裝的話，請先閱讀Sui開發環境建置的文章，再回來這篇文章 如果已經安裝的話可以直接繼續往下 初始化專案輸入以下命令初始化你的專案： 1sui move new">
+<meta property="og:type" content="article">
+<meta property="og:title" content="開發你在Sui上的第一個智能合約（上）">
+<meta property="og:url" content="https://ja99-doge.github.io/2022/12/10/sui_smart_contract/index.html">
+<meta property="og:site_name" content="Sui區塊鏈自學筆記">
+<meta property="og:description" content="本篇文章要分享怎麼用Sui Move開發智能合約，並且在Sui上發佈你第一個智能合約！ 就算不太知道Move怎麼寫，也可以照抄一遍，相信就會對Move和Sui有進一步的了解，那我們開始吧！ 事前準備首先我們要先安裝好Sui的程式，若是還沒安裝的話，請先閱讀Sui開發環境建置的文章，再回來這篇文章 如果已經安裝的話可以直接繼續往下 初始化專案輸入以下命令初始化你的專案： 1sui move new">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://ja99-doge.github.io/images/sui_smart_contract/sui_move_build.png">
+<meta property="article:published_time" content="2022-12-09T23:47:47.000Z">
+<meta property="article:modified_time" content="2022-12-10T02:01:42.551Z">
+<meta property="article:author" content="JA99">
+<meta property="article:tag" content="Sui">
+<meta property="article:tag" content="智能合約">
+<meta property="article:tag" content="Sui Move">
+<meta property="article:tag" content="Sui smart contract">
+<meta property="article:tag" content="Sui開發智能合約">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ja99-doge.github.io/images/sui_smart_contract/sui_move_build.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>開發你在Sui上的第一個智能合約（上）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首頁</a></li><!--
+     --><!--
+       --><li><a href="/about/">關於</a></li><!--
+     --><!--
+       --><li><a href="/archives/">文章</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2022/12/02/sui_faq/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="回到頁首" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">回到頁首</span>
+      <span id="i-share" class="info" style="display:none;">分享</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&text=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&is_video=false&description=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=開發你在Sui上的第一個智能合約（上）&body=Check out this article: https://ja99-doge.github.io/2022/12/10/sui_smart_contract/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&name=開發你在Sui上的第一個智能合約（上）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&t=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%89%8D%E6%BA%96%E5%82%99"><span class="toc-number">1.</span> <span class="toc-text">事前準備</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%B0%88%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">初始化專案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%88%E6%A1%88%E8%A8%AD%E5%AE%9A%E6%AA%94"><span class="toc-number">3.</span> <span class="toc-text">專案設定檔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%B5%84-Module-%E7%AF%84%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">模組(Module)範例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Build-package"><span class="toc-number">5.</span> <span class="toc-text">Build package</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        開發你在Sui上的第一個智能合約（上）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Ja99</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-12-09T23:47:47.000Z" itemprop="datePublished">2022-12-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Sui/">Sui</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Sui/" rel="tag">Sui</a>, <a class="tag-link-link" href="/tags/Sui-Move/" rel="tag">Sui Move</a>, <a class="tag-link-link" href="/tags/Sui-smart-contract/" rel="tag">Sui smart contract</a>, <a class="tag-link-link" href="/tags/Sui%E9%96%8B%E7%99%BC%E6%99%BA%E8%83%BD%E5%90%88%E7%B4%84/" rel="tag">Sui開發智能合約</a>, <a class="tag-link-link" href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%B4%84/" rel="tag">智能合約</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>本篇文章要分享怎麼用<code>Sui Move</code>開發智能合約，並且在Sui上發佈你第一個智能合約！</p>
+<p>就算不太知道Move怎麼寫，也可以照抄一遍，相信就會對Move和Sui有進一步的了解，那我們開始吧！</p>
+<h2 id="事前準備"><a href="#事前準備" class="headerlink" title="事前準備"></a>事前準備</h2><p>首先我們要先安裝好Sui的程式，若是還沒安裝的話，請先閱讀<a href="/2022/12/01/install-dev-environment/">Sui開發環境建置的文章</a>，再回來這篇文章</p>
+<p>如果已經安裝的話可以直接繼續往下</p>
+<h2 id="初始化專案"><a href="#初始化專案" class="headerlink" title="初始化專案"></a>初始化專案</h2><p>輸入以下命令初始化你的專案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sui move new my_first_package</span><br></pre></td></tr></table></figure>
+
+<p>專案裡面的結構長這樣：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">my_first_package</span><br><span class="line">├── Move.toml</span><br><span class="line">└── sources</span><br></pre></td></tr></table></figure>
+<p><code>Move.toml</code>是專案的設定檔<br><code>sources</code>就是你放Move程式的地方</p>
+<h2 id="專案設定檔"><a href="#專案設定檔" class="headerlink" title="專案設定檔"></a>專案設定檔</h2><p>我們可以先來看一下設定檔<code>Move.toml</code></p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[package]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;my_first_package&quot;</span></span><br><span class="line"><span class="attr">version</span> = <span class="string">&quot;0.0.1&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[dependencies]</span></span><br><span class="line"><span class="attr">Sui</span> = &#123; git = <span class="string">&quot;https://github.com/MystenLabs/sui.git&quot;</span>, subdir = <span class="string">&quot;crates/sui-framework&quot;</span>, rev = <span class="string">&quot;devnet&quot;</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="section">[addresses]</span></span><br><span class="line"><span class="attr">my_first_package</span> = <span class="string">&quot;0x0&quot;</span></span><br><span class="line"><span class="attr">sui</span> = <span class="string">&quot;0x2&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>[package]</code>就是放專案的基本資料，<code>[dependencies]</code>是需要用到的一些sui程式庫，這邊也可以放別人寫好的<code>package</code>，<code>my_first_package</code>是你<code>package</code>的地址，當你發布自己的package之後，你會拿到一個<code>object ID</code>，如果你想要讓別人可以使用你的package，就把my_first_package的<code>0x0</code>改成你的<code>object ID</code>，並且推到github上。<code>sui = &quot;0x2&quot;</code>就是在用sui的package，<code>0x2</code>這邊是簡寫，代表16進位的<code>0000000000000000000000000000000000000002</code></p>
+<h2 id="模組-Module-範例"><a href="#模組-Module-範例" class="headerlink" title="模組(Module)範例"></a>模組(Module)範例</h2><p>一個package裡面可以有很多個模組，模組可以存放在<code>sources</code>資料夾底下，副檔名會是<code>.move</code>，以下我們來看官方的一個move模組教學範例，可以分成不同的區塊來閱讀，註解裡有寫<code>Part 1</code>, <code>Part 2</code>…等，我們可以先輸入以下命令來產生一個move檔案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">touch my_first_package/sources/my_module.move</span><br></pre></td></tr></table></figure>
+
+<p>接著把下面的code貼到檔案裡面：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">module my_first_package::my_module &#123;</span><br><span class="line">    <span class="comment">// Part 1: imports</span></span><br><span class="line">    <span class="keyword">use</span> sui::object::&#123;<span class="keyword">Self</span>, UID&#125;;</span><br><span class="line">    <span class="keyword">use</span> sui::transfer;</span><br><span class="line">    <span class="keyword">use</span> sui::tx_context::&#123;<span class="keyword">Self</span>, TxContext&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Part 2: struct definitions</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Sword</span> has key, store &#123;</span><br><span class="line">        id: UID,</span><br><span class="line">        magic: <span class="type">u64</span>,</span><br><span class="line">        strength: <span class="type">u64</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Forge</span> has key, store &#123;</span><br><span class="line">        id: UID,</span><br><span class="line">        swords_created: <span class="type">u64</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Part 3: module initializer to be executed when this module is published</span></span><br><span class="line">    fun <span class="title function_ invoke__">init</span>(ctx: &amp;<span class="keyword">mut</span> TxContext) &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">admin</span> = Forge &#123;</span><br><span class="line">            id: object::<span class="title function_ invoke__">new</span>(ctx),</span><br><span class="line">            swords_created: <span class="number">0</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// transfer the forge object to the module/package publisher</span></span><br><span class="line">        transfer::<span class="title function_ invoke__">transfer</span>(admin, tx_context::<span class="title function_ invoke__">sender</span>(ctx));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Part 4: accessors required to read the struct attributes</span></span><br><span class="line">    public fun <span class="title function_ invoke__">magic</span>(<span class="keyword">self</span>: &amp;Sword): <span class="type">u64</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.magic</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public fun <span class="title function_ invoke__">strength</span>(<span class="keyword">self</span>: &amp;Sword): <span class="type">u64</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.strength</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public fun <span class="title function_ invoke__">swords_created</span>(<span class="keyword">self</span>: &amp;Forge): <span class="type">u64</span> &#123;</span><br><span class="line">        <span class="keyword">self</span>.swords_created</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// part 5: public/ entry functions (introduced later in the tutorial)</span></span><br><span class="line">    <span class="comment">// part 6: private functions (if any)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Part 1是Import，使用關鍵字<code>use</code>，sui::object::{Self, UID}裡面的Self，代表sui::object，在code裡面可以直接使用<code>object</code>，UID對應到的是sui::object::UID，在code裡面也是直接使用UID就可以了。在sui裡面很多東西都是一個物件(object)，比如說NFT, coin…等，sui::transfer::transfer可以用來轉移物件的所有權。sui::tx_context::TxContext，若是放在一個函數的最後一個變數，當我們呼叫合約的時候，這個參數就會自動傳入。</p>
+<p>Part 2是結構的定義，關鍵字<code>key</code>代表，這個東西可以被存在區塊鏈上，<code>store</code>代表可以這個東西可以被存在某個擁有<code>key</code>關鍵字的物件裡面。</p>
+<p>Part 3在<code>Sui Move</code>裡面，當模組被publish時，會執行<code>init</code>這個function，也是跟原本Move不一樣的地方之一</p>
+<p>Part 4是一些可以讀取struct attributes的函數</p>
+<h2 id="Build-package"><a href="#Build-package" class="headerlink" title="Build package"></a>Build package</h2><p>現在讓我們來試試Build專案吧！首先確認自己在<code>my_first_package</code>目錄</p>
+<p>然後輸入以下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sui move build</span><br></pre></td></tr></table></figure>
+<p>應該會看到以下結果<br><img src="/images/sui_smart_contract/sui_move_build.png" alt="sui move build"></p>
+<p>恭喜你build了第一個Sui move package！</p>
+<p>下一次會跟大家分享下集，如何為你的智能合約撰寫測試還有發布合約到Sui區塊鏈上！</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首頁</a></li>
+         
+          <li><a href="/about/">關於</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%89%8D%E6%BA%96%E5%82%99"><span class="toc-number">1.</span> <span class="toc-text">事前準備</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%B0%88%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">初始化專案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%88%E6%A1%88%E8%A8%AD%E5%AE%9A%E6%AA%94"><span class="toc-number">3.</span> <span class="toc-text">專案設定檔</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%B5%84-Module-%E7%AF%84%E4%BE%8B"><span class="toc-number">4.</span> <span class="toc-text">模組(Module)範例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Build-package"><span class="toc-number">5.</span> <span class="toc-text">Build package</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&text=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&is_video=false&description=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=開發你在Sui上的第一個智能合約（上）&body=Check out this article: https://ja99-doge.github.io/2022/12/10/sui_smart_contract/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&title=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&name=開發你在Sui上的第一個智能合約（上）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ja99-doge.github.io/2022/12/10/sui_smart_contract/&t=開發你在Sui上的第一個智能合約（上）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 選單</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 文章目錄</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 頁首</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    JA99
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首頁</a></li><!--
+     --><!--
+       --><li><a href="/about/">關於</a></li><!--
+     --><!--
+       --><li><a href="/archives/">文章</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
