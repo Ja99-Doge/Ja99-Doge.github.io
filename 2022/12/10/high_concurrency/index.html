@@ -17,11 +17,20 @@
 <meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/ali_system_arch.png">
 <meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/availability.jpg">
 <meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/hash_uid.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/cache_list.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/write_read_through.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/write_back.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/write_back_read.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/cache_high_availability_proxy.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/cache_high_availability_server.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/closest_cdn.jpg">
+<meta property="og:image" content="https://ja99-doge.github.io/images/high_concurrency/message_queue.jpg">
 <meta property="article:published_time" content="2022-12-10T00:56:14.000Z">
-<meta property="article:modified_time" content="2022-12-10T16:00:40.836Z">
+<meta property="article:modified_time" content="2022-12-11T10:21:35.374Z">
 <meta property="article:author" content="JA99">
 <meta property="article:tag" content="高併發">
 <meta property="article:tag" content="系統架構">
+<meta property="article:tag" content="cheat sheet">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://ja99-doge.github.io/images/high_concurrency/ali_system_arch.png">
     
@@ -120,7 +129,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88%E9%96%B1%E8%AE%80%E7%AD%86%E8%A8%98"><span class="toc-number">1.</span> <span class="toc-text">高併發通用設計閱讀筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88"><span class="toc-number">1.1.</span> <span class="toc-text">高併發通用設計</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%82%E9%96%93%E7%B4%9A%E5%88%A5"><span class="toc-number">1.2.</span> <span class="toc-text">時間級別</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%95%B0%E6%AD%A5"><span class="toc-number">1.3.</span> <span class="toc-text">異步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E7%B3%BB%E7%B5%B1%E7%9A%84%E6%BC%94%E9%80%B2%E6%80%9D%E8%B7%AF"><span class="toc-number">1.4.</span> <span class="toc-text">一般系統的演進思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%A7%8B%E5%88%86%E5%B1%A4"><span class="toc-number">1.5.</span> <span class="toc-text">架構分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%A4%E7%9A%84%E5%A5%BD%E8%99%95"><span class="toc-number">1.6.</span> <span class="toc-text">分層的好處</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E5%B1%A4"><span class="toc-number">1.7.</span> <span class="toc-text">如何分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E6%98%87%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD"><span class="toc-number">1.8.</span> <span class="toc-text">如何提昇系統性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96%E5%8E%9F%E5%89%87"><span class="toc-number">1.9.</span> <span class="toc-text">性能優化原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E4%B8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96"><span class="toc-number">1.10.</span> <span class="toc-text">高併發下的性能優化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E9%AB%98%E7%B3%BB%E7%B5%B1%E7%9A%84%E8%99%95%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B8"><span class="toc-number">1.10.1.</span> <span class="toc-text">提高系統的處理核心數</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%9B%E5%B0%91%E5%96%AE%E6%AC%A1%E4%BB%BB%E5%8B%99%E7%9A%84%E9%9F%BF%E6%87%89%E6%99%82%E9%96%93"><span class="toc-number">1.10.2.</span> <span class="toc-text">減少單次任務的響應時間</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">1.11.</span> <span class="toc-text">高可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9A%84%E7%B3%BB%E7%B5%B1%E8%A8%AD%E8%A8%88%E5%8E%9F%E5%89%87"><span class="toc-number">1.12.</span> <span class="toc-text">高可用性的系統設計原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E6%93%B4%E5%B1%95%E6%80%A7"><span class="toc-number">1.13.</span> <span class="toc-text">高可擴展性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B3%87%E6%96%99%E5%BA%AB"><span class="toc-number">1.14.</span> <span class="toc-text">資料庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E6%8A%80%E8%A1%93"><span class="toc-number">1.15.</span> <span class="toc-text">池化技術</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%BE%9E%E8%AE%80%E5%AF%AB%E5%88%86%E9%9B%A2"><span class="toc-number">1.16.</span> <span class="toc-text">主從讀寫分離</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A8%AA%E5%95%8F%E6%95%B8%E6%93%9A%E5%BA%AB"><span class="toc-number">1.17.</span> <span class="toc-text">如何訪問數據庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%AB%E5%88%86%E8%A1%A8"><span class="toc-number">1.18.</span> <span class="toc-text">分庫分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NoSQL"><span class="toc-number">1.19.</span> <span class="toc-text">NoSQL</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88%E9%96%B1%E8%AE%80%E7%AD%86%E8%A8%98"><span class="toc-number">1.</span> <span class="toc-text">高併發通用設計閱讀筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88"><span class="toc-number">1.1.</span> <span class="toc-text">高併發通用設計</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%82%E9%96%93%E7%B4%9A%E5%88%A5"><span class="toc-number">1.2.</span> <span class="toc-text">時間級別</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%95%B0%E6%AD%A5"><span class="toc-number">1.3.</span> <span class="toc-text">異步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E7%B3%BB%E7%B5%B1%E7%9A%84%E6%BC%94%E9%80%B2%E6%80%9D%E8%B7%AF"><span class="toc-number">1.4.</span> <span class="toc-text">一般系統的演進思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%A7%8B%E5%88%86%E5%B1%A4"><span class="toc-number">1.5.</span> <span class="toc-text">架構分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%A4%E7%9A%84%E5%A5%BD%E8%99%95"><span class="toc-number">1.6.</span> <span class="toc-text">分層的好處</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E5%B1%A4"><span class="toc-number">1.7.</span> <span class="toc-text">如何分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E6%98%87%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD"><span class="toc-number">1.8.</span> <span class="toc-text">如何提昇系統性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96%E5%8E%9F%E5%89%87"><span class="toc-number">1.9.</span> <span class="toc-text">性能優化原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E4%B8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96"><span class="toc-number">1.10.</span> <span class="toc-text">高併發下的性能優化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E9%AB%98%E7%B3%BB%E7%B5%B1%E7%9A%84%E8%99%95%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B8"><span class="toc-number">1.10.1.</span> <span class="toc-text">提高系統的處理核心數</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%9B%E5%B0%91%E5%96%AE%E6%AC%A1%E4%BB%BB%E5%8B%99%E7%9A%84%E9%9F%BF%E6%87%89%E6%99%82%E9%96%93"><span class="toc-number">1.10.2.</span> <span class="toc-text">減少單次任務的響應時間</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">1.11.</span> <span class="toc-text">高可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9A%84%E7%B3%BB%E7%B5%B1%E8%A8%AD%E8%A8%88%E5%8E%9F%E5%89%87"><span class="toc-number">1.12.</span> <span class="toc-text">高可用性的系統設計原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E6%93%B4%E5%B1%95%E6%80%A7"><span class="toc-number">1.13.</span> <span class="toc-text">高可擴展性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B3%87%E6%96%99%E5%BA%AB"><span class="toc-number">1.14.</span> <span class="toc-text">資料庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E6%8A%80%E8%A1%93"><span class="toc-number">1.15.</span> <span class="toc-text">池化技術</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%BE%9E%E8%AE%80%E5%AF%AB%E5%88%86%E9%9B%A2"><span class="toc-number">1.16.</span> <span class="toc-text">主從讀寫分離</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A8%AA%E5%95%8F%E6%95%B8%E6%93%9A%E5%BA%AB"><span class="toc-number">1.17.</span> <span class="toc-text">如何訪問數據庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%AB%E5%88%86%E8%A1%A8"><span class="toc-number">1.18.</span> <span class="toc-text">分庫分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NoSQL"><span class="toc-number">1.19.</span> <span class="toc-text">NoSQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98"><span class="toc-number">1.20.</span> <span class="toc-text">緩存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cache-Aside-%E7%AD%96%E7%95%A5"><span class="toc-number">1.21.</span> <span class="toc-text">Cache Aside 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Read-x2F-Write-Through%E7%AD%96%E7%95%A5"><span class="toc-number">1.22.</span> <span class="toc-text">Read&#x2F;Write Through策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Write-Back%E7%AD%96%E7%95%A5"><span class="toc-number">1.23.</span> <span class="toc-text">Write Back策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E5%A6%82%E4%BD%95%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">1.24.</span> <span class="toc-text">緩存如何高可用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9C%89%E5%A4%9A%E9%87%8D%E8%A6%81%EF%BC%9F"><span class="toc-number">1.25.</span> <span class="toc-text">緩存高可用有多重要？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B6%E7%AB%AF%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.1.</span> <span class="toc-text">客戶端方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E9%96%93%E4%BB%A3%E7%90%86%E5%B1%A4%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.2.</span> <span class="toc-text">中間代理層方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8B%99%E7%AB%AF%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.3.</span> <span class="toc-text">服務端方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-number">1.26.</span> <span class="toc-text">緩存穿透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Doge-Pile-effect"><span class="toc-number">1.27.</span> <span class="toc-text">Doge-Pile effect</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9C%E6%85%8B%E8%B3%87%E6%BA%90%E7%9A%84%E7%B7%A9%E5%AD%98"><span class="toc-number">1.28.</span> <span class="toc-text">靜態資源的緩存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B8%E6%93%9A%E9%81%B7%E7%A7%BB"><span class="toc-number">1.29.</span> <span class="toc-text">數據遷移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E5%88%97%E9%9A%8A"><span class="toc-number">1.30.</span> <span class="toc-text">消息列隊</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -160,7 +169,7 @@
       
     <div class="article-tag">
         <i class="fas fa-tag"></i>
-        <a class="tag-link-link" href="/tags/%E7%B3%BB%E7%B5%B1%E6%9E%B6%E6%A7%8B/" rel="tag">系統架構</a>, <a class="tag-link-link" href="/tags/%E9%AB%98%E4%BD%B5%E7%99%BC/" rel="tag">高併發</a>
+        <a class="tag-link-link" href="/tags/cheat-sheet/" rel="tag">cheat sheet</a>, <a class="tag-link-link" href="/tags/%E7%B3%BB%E7%B5%B1%E6%9E%B6%E6%A7%8B/" rel="tag">系統架構</a>, <a class="tag-link-link" href="/tags/%E9%AB%98%E4%BD%B5%E7%99%BC/" rel="tag">高併發</a>
     </div>
 
 
@@ -363,7 +372,139 @@
 <li>數據庫變更容易</li>
 <li>適合大數據</li>
 </ul>
-<p>…持續學習中</p>
+<p>NoSQL適合與SQL互補，比如倒排索引，由分詞出關鍵詞對應回ID</p>
+<p>NoSQL的擴展性</p>
+<ul>
+<li>Replica：主從分離，但若是主掛了，會有其它節點補上</li>
+<li>Shard：分片，NoSQL的分庫分表，在MongoDB，需要三個角色來支持<ul>
+<li>Router</li>
+<li>Config Server</li>
+<li>Shard</li>
+</ul>
+</li>
+</ul>
+<h2 id="緩存"><a href="#緩存" class="headerlink" title="緩存"></a>緩存</h2><p>緩存：協調兩者數據傳輸速度差異的結構</p>
+<p><img src="/images/high_concurrency/cache_list.jpg" alt="cache_list"></p>
+<p>緩存案例<br>linux記憶體管理，使用MMU實現虛擬到物理地址轉換，但是計算複雜，會用TLB來緩存最近轉換過的映射<br>HTTP，獲取圖片和Etag，下一次request，If-None-Match: Etag，server回304</p>
+<p>緩存分類</p>
+<ul>
+<li>靜態緩存：用於靜態資源</li>
+<li>分佈式緩存：用於動態請求</li>
+<li>熱點本地緩存：是在應用服務器中，用於極端的熱點數據查詢，HashMap, Guava Cache, Ehcache，有效期短，不能確定是哪台服務器做緩存</li>
+</ul>
+<p>緩存的不足</p>
+<ul>
+<li>比較適用於讀多寫少的應用，數據有熱點需求</li>
+<li>數據不一致性，可能更新資料庫成功，更新緩存失敗</li>
+<li>常用內存當緩存，但內存也不是無限的</li>
+<li>增加系統複雜度，運維成本增加</li>
+</ul>
+<h2 id="Cache-Aside-策略"><a href="#Cache-Aside-策略" class="headerlink" title="Cache Aside 策略"></a>Cache Aside 策略</h2><p>解決緩存與數據庫中的數據不一致</p>
+<p>讀策略：</p>
+<ul>
+<li>從緩存讀數據</li>
+<li>緩存命中，返回數據</li>
+<li>緩存不命中，從數據庫讀</li>
+<li>寫入緩存，返回用戶</li>
+</ul>
+<p>寫策略：</p>
+<ul>
+<li>更新數據庫</li>
+<li>刪除緩存</li>
+</ul>
+<p>其實還是有可能數據不一致，但是因為緩存寫入快，所以機會低</p>
+<p>要注意根據應用場景而變，比如說，註冊新用戶，因為主從分離，會因為主從延遲而讀不到用戶信息<br>這時候就是要寫入數據庫後寫緩存，且因為是新用戶，所以不會有併發更新用戶資訊的情況</p>
+<p>Cache Aside的問題<br>寫入頻繁時，緩存會頻繁被清理</p>
+<p>兩種解決方案：</p>
+<ol>
+<li>更新數據也更新緩存，只是在更新緩存前先加個分布式鎖，只允許同時間有一個線程更新緩存</li>
+<li>更新數據時，加一個短過期時間，緩存不一致會很快過期，業務上可接受的話就ok</li>
+</ol>
+<h2 id="Read-x2F-Write-Through策略"><a href="#Read-x2F-Write-Through策略" class="headerlink" title="Read&#x2F;Write Through策略"></a>Read&#x2F;Write Through策略</h2><p>用戶只與緩存打交道，由緩存和數據庫通信，寫入或讀取數據</p>
+<p>Write Miss<br>寫請求的數據，在緩存中不存在</p>
+<p>Write Allocate<br>寫入緩存，由緩存組件更新到數據庫</p>
+<p>No-write Allocate<br>不寫入緩存，直接更新到數據庫</p>
+<p><img src="/images/high_concurrency/write_read_through.jpg" alt="write_read_through"></p>
+<p>像是Redis, Memcached不提供寫入數據庫，或自動加載數據庫中數據的功能</p>
+<p>要注意是同步寫數據庫，對性能有影響</p>
+<h2 id="Write-Back策略"><a href="#Write-Back策略" class="headerlink" title="Write Back策略"></a>Write Back策略</h2><p>寫數據只寫緩存，並把緩存區塊標為dirty</p>
+<p>對Write Miss使用Write Allocate</p>
+<p>寫策略<br><img src="/images/high_concurrency/write_back.jpg" alt="write_back"></p>
+<p>讀策略<br><img src="/images/high_concurrency/write_back_read.jpg" alt="write_back_read"></p>
+<p>這個策略用於向硬碟寫數據，難以應用到常用的數據庫和緩存的場景，因為緩存如果是記憶體，是非持久化的。</p>
+<h2 id="緩存如何高可用"><a href="#緩存如何高可用" class="headerlink" title="緩存如何高可用"></a>緩存如何高可用</h2><h2 id="緩存高可用有多重要？"><a href="#緩存高可用有多重要？" class="headerlink" title="緩存高可用有多重要？"></a>緩存高可用有多重要？</h2><p>緩存命中率 &#x3D; $\frac{緩存命中數}{總請求數}$</p>
+<p>核心緩存的命中率需要維持在99%甚至是99.9%，下降1%，系統會遭受毀滅性打擊。</p>
+<p>範例：<br>QPS: 10000&#x2F;s<br>每次調用會訪問10次緩存或數據庫<br>緩存命中率減少1%<br>10000 * 10 * 1% &#x3D; 1000次請求<br>單個MySQL節點的讀請求量1500&#x2F;s</p>
+<p>1000次請求可能會對數據庫造成衝擊</p>
+<p>解決方法：分佈式緩存</p>
+<p>分佈式緩存的高可用方案：</p>
+<ul>
+<li>客戶端方案：客戶端配置多個可連線的緩存節點</li>
+<li>中間代理層方案：代碼和緩存節點間增加代理層</li>
+<li>服務端方案：Redis &gt; 2.4, Redis Sentinel</li>
+</ul>
+<h3 id="客戶端方案"><a href="#客戶端方案" class="headerlink" title="客戶端方案"></a>客戶端方案</h3><p>透過制定分片策略和數據讀寫策略 e.g. Hash，實現分佈式高可用</p>
+<p>好處是性能耗損低<br>壞數客戶端邏輯複雜，多語言無法復用</p>
+<h3 id="中間代理層方案"><a href="#中間代理層方案" class="headerlink" title="中間代理層方案"></a>中間代理層方案</h3><p><img src="/images/high_concurrency/cache_high_availability_proxy.jpg" alt="cache_high_availability_proxy"><br>Facebook的<a target="_blank" rel="noopener" href="https://github.com/facebook/mcrouter">Mcrouter</a><br>Twitter的<a target="_blank" rel="noopener" href="https://github.com/twitter/twemproxy">Twemproxy</a></p>
+<h3 id="服務端方案"><a href="#服務端方案" class="headerlink" title="服務端方案"></a>服務端方案</h3><p><img src="/images/high_concurrency/cache_high_availability_server.jpg" alt="cache_high_availability_server"></p>
+<h2 id="緩存穿透"><a href="#緩存穿透" class="headerlink" title="緩存穿透"></a>緩存穿透</h2><p>緩存穿透指的是緩存沒查到，不得不去查詢後端系統</p>
+<p>範例：<br>找不存在的用戶ID資料，保證cache會失敗，一直查資料庫</p>
+<p>解決辦法：</p>
+<ol>
+<li>回種空值：對於查詢把空值放在緩存</li>
+<li>布隆過濾器：判斷元素是否在集合中</li>
+</ol>
+<p>布隆過濾器：<br>元素經過hash並mod目標可能總數，如果為1就查緩存或是穿透，0就不在集合，直接回應<br>只會有false positive，沒有false negative，不是就一定不是，比如判斷不是用戶就不是用戶<br>但是因為布隆的hash計算方式有可能發生碰撞，所以還是可能穿透</p>
+<p>優化使用多個hash算法計算，如果都為1才認為在集合中</p>
+<p>問題：<br>不支持刪除元素，因為碰撞的問題</p>
+<h2 id="Doge-Pile-effect"><a href="#Doge-Pile-effect" class="headerlink" title="Doge-Pile effect"></a>Doge-Pile effect</h2><p>一個熱點緩存失效，導致大量穿透</p>
+<p>解決方法</p>
+<ol>
+<li>失效後啟動線程，加載數據庫數據到緩存，未加載前所有請求不再穿透直接返回</li>
+<li>在Memcached或Redis設置分佈式鎖</li>
+</ol>
+<p>2的做法，在Memcached寫入key為lock.1的緩存，加載後刪掉，後面的若看到有lock.1就重新在緩存取數據</p>
+<h2 id="靜態資源的緩存"><a href="#靜態資源的緩存" class="headerlink" title="靜態資源的緩存"></a>靜態資源的緩存</h2><p>用CDN，重點是就近訪問</p>
+<p>CDN第三方會給CDN的IP</p>
+<p>問題：那如果換CDN的第三方廠商呢？或是換IP呢？</p>
+<p>解決：<br>CNAME 跳到另外一個域名<br>比如自己機構的圖片域名:img.example.com<br>把CNAME配置為a1b2c61.cdn.company.com</p>
+<p>DNS域名解析本身可能很久</p>
+<p>域名解析流程：</p>
+<ol>
+<li>本地hosts文件</li>
+<li>Local DNS</li>
+<li>請求根DNS 返回.com</li>
+<li>請求.com頂級DSN返回 google.com</li>
+<li>從google.com的域名服務器查到<a target="_blank" rel="noopener" href="http://www.google.com的ip,返回ip標記來自權威dns,寫入local/">www.google.com的ip，返回ip標記來自權威DNS，寫入Local</a> DNS做緩存</li>
+</ol>
+<p>繞過得方法：App先預先解析，並存緩存，且有定時器定期更新</p>
+<p>如何找到離用戶最近的CDN節點<br>GSLB<br>比如按照IP劃分<br><img src="/images/high_concurrency/closest_cdn.jpg" alt="closest cdn"></p>
+<h2 id="數據遷移"><a href="#數據遷移" class="headerlink" title="數據遷移"></a>數據遷移</h2><p>數據遷移的重點</p>
+<ul>
+<li>在線遷移，遷移的同時有可能寫入</li>
+<li>數據的一致性</li>
+<li>可以輕易回滾</li>
+<li>預熱cache，不然資料庫可能直接爆了</li>
+</ul>
+<p>雙寫方案</p>
+<ol>
+<li>新庫配置為舊庫的從庫</li>
+<li>數據寫入的時候兩邊的都要寫入，可以異步寫入新庫</li>
+<li>抽樣校驗數據</li>
+<li>灰度切換，也可預熱快取</li>
+<li>有問題就切換回舊庫</li>
+</ol>
+<p>自建機房遷移到雲上要盡量自建服務用自建資料庫，雲上服務用雲上資料庫減少流量</p>
+<h2 id="消息列隊"><a href="#消息列隊" class="headerlink" title="消息列隊"></a>消息列隊</h2><p>一般情況都是讀多寫少，但如果有高併發寫請求，比如秒殺搶購呢？</p>
+<p>解決：使用消息列隊<br><img src="/images/high_concurrency/message_queue.jpg" alt="message queue"></p>
+<p>要考慮的問題</p>
+<ul>
+<li>同步流程和異步流程的邊界</li>
+<li>消息是否丟失，是否重複？</li>
+<li>請求的延遲是多少？</li>
+<li>業務流程能否分散到不同消息列隊？</li>
+</ul>
+<p>學習中…</p>
 
   </div>
 </article>
@@ -387,7 +528,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88%E9%96%B1%E8%AE%80%E7%AD%86%E8%A8%98"><span class="toc-number">1.</span> <span class="toc-text">高併發通用設計閱讀筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88"><span class="toc-number">1.1.</span> <span class="toc-text">高併發通用設計</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%82%E9%96%93%E7%B4%9A%E5%88%A5"><span class="toc-number">1.2.</span> <span class="toc-text">時間級別</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%95%B0%E6%AD%A5"><span class="toc-number">1.3.</span> <span class="toc-text">異步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E7%B3%BB%E7%B5%B1%E7%9A%84%E6%BC%94%E9%80%B2%E6%80%9D%E8%B7%AF"><span class="toc-number">1.4.</span> <span class="toc-text">一般系統的演進思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%A7%8B%E5%88%86%E5%B1%A4"><span class="toc-number">1.5.</span> <span class="toc-text">架構分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%A4%E7%9A%84%E5%A5%BD%E8%99%95"><span class="toc-number">1.6.</span> <span class="toc-text">分層的好處</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E5%B1%A4"><span class="toc-number">1.7.</span> <span class="toc-text">如何分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E6%98%87%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD"><span class="toc-number">1.8.</span> <span class="toc-text">如何提昇系統性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96%E5%8E%9F%E5%89%87"><span class="toc-number">1.9.</span> <span class="toc-text">性能優化原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E4%B8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96"><span class="toc-number">1.10.</span> <span class="toc-text">高併發下的性能優化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E9%AB%98%E7%B3%BB%E7%B5%B1%E7%9A%84%E8%99%95%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B8"><span class="toc-number">1.10.1.</span> <span class="toc-text">提高系統的處理核心數</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%9B%E5%B0%91%E5%96%AE%E6%AC%A1%E4%BB%BB%E5%8B%99%E7%9A%84%E9%9F%BF%E6%87%89%E6%99%82%E9%96%93"><span class="toc-number">1.10.2.</span> <span class="toc-text">減少單次任務的響應時間</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">1.11.</span> <span class="toc-text">高可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9A%84%E7%B3%BB%E7%B5%B1%E8%A8%AD%E8%A8%88%E5%8E%9F%E5%89%87"><span class="toc-number">1.12.</span> <span class="toc-text">高可用性的系統設計原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E6%93%B4%E5%B1%95%E6%80%A7"><span class="toc-number">1.13.</span> <span class="toc-text">高可擴展性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B3%87%E6%96%99%E5%BA%AB"><span class="toc-number">1.14.</span> <span class="toc-text">資料庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E6%8A%80%E8%A1%93"><span class="toc-number">1.15.</span> <span class="toc-text">池化技術</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%BE%9E%E8%AE%80%E5%AF%AB%E5%88%86%E9%9B%A2"><span class="toc-number">1.16.</span> <span class="toc-text">主從讀寫分離</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A8%AA%E5%95%8F%E6%95%B8%E6%93%9A%E5%BA%AB"><span class="toc-number">1.17.</span> <span class="toc-text">如何訪問數據庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%AB%E5%88%86%E8%A1%A8"><span class="toc-number">1.18.</span> <span class="toc-text">分庫分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NoSQL"><span class="toc-number">1.19.</span> <span class="toc-text">NoSQL</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88%E9%96%B1%E8%AE%80%E7%AD%86%E8%A8%98"><span class="toc-number">1.</span> <span class="toc-text">高併發通用設計閱讀筆記</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E9%80%9A%E7%94%A8%E8%A8%AD%E8%A8%88"><span class="toc-number">1.1.</span> <span class="toc-text">高併發通用設計</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%82%E9%96%93%E7%B4%9A%E5%88%A5"><span class="toc-number">1.2.</span> <span class="toc-text">時間級別</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%95%B0%E6%AD%A5"><span class="toc-number">1.3.</span> <span class="toc-text">異步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E7%B3%BB%E7%B5%B1%E7%9A%84%E6%BC%94%E9%80%B2%E6%80%9D%E8%B7%AF"><span class="toc-number">1.4.</span> <span class="toc-text">一般系統的演進思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%B6%E6%A7%8B%E5%88%86%E5%B1%A4"><span class="toc-number">1.5.</span> <span class="toc-text">架構分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%A4%E7%9A%84%E5%A5%BD%E8%99%95"><span class="toc-number">1.6.</span> <span class="toc-text">分層的好處</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E5%B1%A4"><span class="toc-number">1.7.</span> <span class="toc-text">如何分層</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E6%98%87%E7%B3%BB%E7%B5%B1%E6%80%A7%E8%83%BD"><span class="toc-number">1.8.</span> <span class="toc-text">如何提昇系統性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96%E5%8E%9F%E5%89%87"><span class="toc-number">1.9.</span> <span class="toc-text">性能優化原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BD%B5%E7%99%BC%E4%B8%8B%E7%9A%84%E6%80%A7%E8%83%BD%E5%84%AA%E5%8C%96"><span class="toc-number">1.10.</span> <span class="toc-text">高併發下的性能優化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E9%AB%98%E7%B3%BB%E7%B5%B1%E7%9A%84%E8%99%95%E7%90%86%E6%A0%B8%E5%BF%83%E6%95%B8"><span class="toc-number">1.10.1.</span> <span class="toc-text">提高系統的處理核心數</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%9B%E5%B0%91%E5%96%AE%E6%AC%A1%E4%BB%BB%E5%8B%99%E7%9A%84%E9%9F%BF%E6%87%89%E6%99%82%E9%96%93"><span class="toc-number">1.10.2.</span> <span class="toc-text">減少單次任務的響應時間</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">1.11.</span> <span class="toc-text">高可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E7%9A%84%E7%B3%BB%E7%B5%B1%E8%A8%AD%E8%A8%88%E5%8E%9F%E5%89%87"><span class="toc-number">1.12.</span> <span class="toc-text">高可用性的系統設計原則</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E5%8F%AF%E6%93%B4%E5%B1%95%E6%80%A7"><span class="toc-number">1.13.</span> <span class="toc-text">高可擴展性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B3%87%E6%96%99%E5%BA%AB"><span class="toc-number">1.14.</span> <span class="toc-text">資料庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%A0%E5%8C%96%E6%8A%80%E8%A1%93"><span class="toc-number">1.15.</span> <span class="toc-text">池化技術</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E5%BE%9E%E8%AE%80%E5%AF%AB%E5%88%86%E9%9B%A2"><span class="toc-number">1.16.</span> <span class="toc-text">主從讀寫分離</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A8%AA%E5%95%8F%E6%95%B8%E6%93%9A%E5%BA%AB"><span class="toc-number">1.17.</span> <span class="toc-text">如何訪問數據庫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%BA%AB%E5%88%86%E8%A1%A8"><span class="toc-number">1.18.</span> <span class="toc-text">分庫分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NoSQL"><span class="toc-number">1.19.</span> <span class="toc-text">NoSQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98"><span class="toc-number">1.20.</span> <span class="toc-text">緩存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cache-Aside-%E7%AD%96%E7%95%A5"><span class="toc-number">1.21.</span> <span class="toc-text">Cache Aside 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Read-x2F-Write-Through%E7%AD%96%E7%95%A5"><span class="toc-number">1.22.</span> <span class="toc-text">Read&#x2F;Write Through策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Write-Back%E7%AD%96%E7%95%A5"><span class="toc-number">1.23.</span> <span class="toc-text">Write Back策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E5%A6%82%E4%BD%95%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">1.24.</span> <span class="toc-text">緩存如何高可用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E9%AB%98%E5%8F%AF%E7%94%A8%E6%9C%89%E5%A4%9A%E9%87%8D%E8%A6%81%EF%BC%9F"><span class="toc-number">1.25.</span> <span class="toc-text">緩存高可用有多重要？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B6%E7%AB%AF%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.1.</span> <span class="toc-text">客戶端方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AD%E9%96%93%E4%BB%A3%E7%90%86%E5%B1%A4%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.2.</span> <span class="toc-text">中間代理層方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8B%99%E7%AB%AF%E6%96%B9%E6%A1%88"><span class="toc-number">1.25.3.</span> <span class="toc-text">服務端方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B7%A9%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="toc-number">1.26.</span> <span class="toc-text">緩存穿透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Doge-Pile-effect"><span class="toc-number">1.27.</span> <span class="toc-text">Doge-Pile effect</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9C%E6%85%8B%E8%B3%87%E6%BA%90%E7%9A%84%E7%B7%A9%E5%AD%98"><span class="toc-number">1.28.</span> <span class="toc-text">靜態資源的緩存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B8%E6%93%9A%E9%81%B7%E7%A7%BB"><span class="toc-number">1.29.</span> <span class="toc-text">數據遷移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E5%88%97%E9%9A%8A"><span class="toc-number">1.30.</span> <span class="toc-text">消息列隊</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
