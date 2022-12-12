@@ -143,6 +143,27 @@
   </url>
   
   <url>
+    <loc>https://ja99-doge.github.io/tags/Machine-Learning/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/tags/DevOps/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/tags/MLOps/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://ja99-doge.github.io/tags/%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83/</loc>
     <lastmod>2022-12-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -165,27 +186,6 @@
   
   <url>
     <loc>https://ja99-doge.github.io/tags/Sui%E5%AE%89%E8%A3%9D%E9%96%8B%E7%99%BC%E7%92%B0%E5%A2%83/</loc>
-    <lastmod>2022-12-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ja99-doge.github.io/tags/Machine-Learning/</loc>
-    <lastmod>2022-12-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ja99-doge.github.io/tags/DevOps/</loc>
-    <lastmod>2022-12-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://ja99-doge.github.io/tags/MLOps/</loc>
     <lastmod>2022-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
