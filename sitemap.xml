@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://ja99-doge.github.io/2022/12/10/parallel_programming/</loc>
+    
+    <lastmod>2022-12-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://ja99-doge.github.io/2022/12/10/high_concurrency/</loc>
     
     <lastmod>2022-12-12</lastmod>
@@ -153,6 +162,20 @@
   </url>
   
   <url>
+    <loc>https://ja99-doge.github.io/tags/%E5%B9%B3%E8%A1%8C%E5%8C%96%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/tags/Python/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://ja99-doge.github.io/tags/Sui-Client/</loc>
     <lastmod>2022-12-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -233,6 +256,13 @@
   
   <url>
     <loc>https://ja99-doge.github.io/categories/%E7%B3%BB%E7%B5%B1%E6%9E%B6%E6%A7%8B/</loc>
+    <lastmod>2022-12-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://ja99-doge.github.io/categories/%E5%B9%B3%E8%A1%8C%E5%8C%96%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/</loc>
     <lastmod>2022-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

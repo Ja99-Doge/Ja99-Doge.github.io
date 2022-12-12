@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="google-site-verification" content="6HxMxmAma9fDtXHX6dJW1c1GmDBkaylZ0BE-9Ui-hHQ" />
+    <meta name="description" content="Python 平行化程式設計分兩種multi-threading跟multi-processing，前者是一個process裡面有多個thread在跑，thread間共用code section等資料，register和stack不共用，多個processes則是連code section都不共用。 multiprocessing每個都可以指派到不同的CPU上，所以適合效能限制在CPU的情況；mu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python平行化程式設計小筆記">
+<meta property="og:url" content="https://ja99-doge.github.io/2022/12/10/parallel_programming/index.html">
+<meta property="og:site_name" content="Sui區塊鏈自學筆記">
+<meta property="og:description" content="Python 平行化程式設計分兩種multi-threading跟multi-processing，前者是一個process裡面有多個thread在跑，thread間共用code section等資料，register和stack不共用，多個processes則是連code section都不共用。 multiprocessing每個都可以指派到不同的CPU上，所以適合效能限制在CPU的情況；mu">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2022-12-10T00:56:14.000Z">
+<meta property="article:modified_time" content="2022-12-12T05:04:23.143Z">
+<meta property="article:author" content="JA99">
+<meta property="article:tag" content="平行化程式設計">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Python平行化程式設計小筆記</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="/custom_css_source.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首頁</a></li><!--
+     --><!--
+       --><li><a href="/about/">關於</a></li><!--
+     --><!--
+       --><li><a href="/archives/">文章</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2022/12/10/high_concurrency/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2022/12/10/sui_smart_contract/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="回到頁首" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">回到頁首</span>
+      <span id="i-share" class="info" style="display:none;">分享</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ja99-doge.github.io/2022/12/10/parallel_programming/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&text=Python平行化程式設計小筆記"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&is_video=false&description=Python平行化程式設計小筆記"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python平行化程式設計小筆記&body=Check out this article: https://ja99-doge.github.io/2022/12/10/parallel_programming/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&name=Python平行化程式設計小筆記&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ja99-doge.github.io/2022/12/10/parallel_programming/&t=Python平行化程式設計小筆記"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Python平行化程式設計小筆記
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Ja99</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-12-10T00:56:14.000Z" itemprop="datePublished">2022-12-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%B9%B3%E8%A1%8C%E5%8C%96%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/">平行化程式設計</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Python/" rel="tag">Python</a>, <a class="tag-link-link" href="/tags/%E5%B9%B3%E8%A1%8C%E5%8C%96%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88/" rel="tag">平行化程式設計</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Python</p>
+<p>平行化程式設計分兩種multi-threading跟multi-processing，前者是一個process裡面有多個thread在跑，thread間共用code section等資料，register和stack不共用，多個processes則是連code section都不共用。</p>
+<p>multiprocessing每個都可以指派到不同的CPU上，所以適合效能限制在CPU的情況；multi-threading會在同一個，所以適合效能限制在IO的情況。</p>
+<p>平行化設計有兩個重點：</p>
+<ul>
+<li>如何處理race condition</li>
+<li>如何process或thread間如何共用資料</li>
+</ul>
+<p>race condition處理方式就是對於可能會產生競爭的地方加鎖，常用鎖有幾種</p>
+<ul>
+<li>semaphore: 對資源計數，有幾個用幾個</li>
+<li>mutex lock: sleep waiting 有人在用資源就睡覺等待</li>
+<li>Spin lock : busy waiting 有人在用資源就一直要要到得到為止</li>
+</ul>
+<p>其它還有很好用的方法像是Event，也可以做為條件式控制process或thread</p>
+<p>另外一個重點，如何共用資料<br>在python裡是透過Manager, Pipe, Value, Array這幾個</p>
+<ul>
+<li>Manager是統一管理</li>
+<li>Pipe是連線收發機制<br>其它是比較單一共享結構的方法</li>
+</ul>
+<p>但程式一下子分出很多個平行化程式可能會很難管理，它們會互相打架<br>這時候就需要Fork-join模型，需要平行化的地方fork出process平行處理，處理完再join回一個process</p>
+<p>範例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> x*x</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">with</span> Pool(<span class="number">5</span>) <span class="keyword">as</span> p:</span><br><span class="line">        <span class="built_in">print</span>(p.<span class="built_in">map</span>(f, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">info</span>(<span class="params">title</span>):</span><br><span class="line">    <span class="built_in">print</span>(title)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;module name:&#x27;</span>, __name__)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;parent process:&#x27;</span>, os.getppid())</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;process id:&#x27;</span>, os.getpid())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">name</span>):</span><br><span class="line">    info(<span class="string">&#x27;function f&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;hello&#x27;</span>, name)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    info(<span class="string">&#x27;main line&#x27;</span>)</span><br><span class="line">    p = Process(target=f, args=(<span class="string">&quot;GG&quot;</span>, ))</span><br><span class="line">    p.start()</span><br><span class="line">    p.join()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Lock</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">l, i</span>):</span><br><span class="line">    <span class="keyword">if</span> i == <span class="number">5</span>:</span><br><span class="line">        time.sleep(<span class="number">2</span>)</span><br><span class="line">    l.acquire()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;hello&quot;</span>, i)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        l.release()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    lock = Lock()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> num <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        Process(target=f, args=(lock, num)).start()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Value, Array</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">n, a</span>):</span><br><span class="line">    n.value = <span class="number">3.1415927</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(a)):</span><br><span class="line">        a[i] = -a[i]</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    num = Value(<span class="string">&quot;d&quot;</span>, <span class="number">0.0</span>)</span><br><span class="line">    arr = Array(<span class="string">&quot;i&quot;</span>, <span class="built_in">range</span>(<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">    p = Process(target=f, args=(num, arr))</span><br><span class="line">    p.start()</span><br><span class="line">    p.join()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(num.value)</span><br><span class="line">    <span class="built_in">print</span>(arr[:])</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Pipe</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>(<span class="params">conn</span>):</span><br><span class="line">    conn.send(<span class="string">&quot;Hi I&#x27;m your subprocess. My ID is &#123;&#125;&quot;</span>.<span class="built_in">format</span>(os.getpid()))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;ID &#123;&#125; receive main_process message: &quot;</span>.<span class="built_in">format</span>(os.getpid()), conn.recv())</span><br><span class="line">    conn.close()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main_conn, sub_conn = Pipe()</span><br><span class="line">    process_list = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        proc = Process(target=func, args=(sub_conn,))</span><br><span class="line">        process_list.append(proc)</span><br><span class="line">        proc.start()</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;I&#x27;m main process, receive sub process message: &quot;</span>, main_conn.recv())</span><br><span class="line">        main_conn.send(<span class="string">&quot;Remember I&#x27;m your Master&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> each_process <span class="keyword">in</span> process_list:</span><br><span class="line">        each_process.join()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Manager</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">func</span>(<span class="params">dic, my_list, n</span>):</span><br><span class="line">    dic[<span class="string">&quot;Process_&#123;&#125;&quot;</span>.<span class="built_in">format</span>(n)] = <span class="string">&quot;1&quot;</span></span><br><span class="line">    dic[<span class="string">&quot;2&quot;</span>] = <span class="number">2</span></span><br><span class="line">    dic[<span class="number">0.25</span>] = <span class="literal">None</span></span><br><span class="line">    my_list.append(n)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">with</span> Manager() <span class="keyword">as</span> manager:</span><br><span class="line">        dic = manager.<span class="built_in">dict</span>()</span><br><span class="line">        my_list = manager.<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">        process_list = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">            proc = Process(target=func, args=(dic, my_list, i))</span><br><span class="line">            proc.start()</span><br><span class="line">            process_list.append(proc)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> each_process <span class="keyword">in</span> process_list:</span><br><span class="line">            each_process.join()</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(dic)</span><br><span class="line">        <span class="built_in">print</span>(my_list)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Event</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">task</span>(<span class="params">event, number</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Process <span class="subst">&#123;number&#125;</span> waiting...&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">    event.wait()</span><br><span class="line">    value = random()</span><br><span class="line">    sleep(value)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Process <span class="subst">&#123;number&#125;</span> got <span class="subst">&#123;value&#125;</span>&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line"></span><br><span class="line">    event = Event()</span><br><span class="line">    processes = [Process(target=task, args=(event, i)) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>)]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> process <span class="keyword">in</span> processes:</span><br><span class="line">        process.start()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;main process blocking&quot;</span>)</span><br><span class="line">    sleep(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    event.<span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> process <span class="keyword">in</span> processes:</span><br><span class="line">        process.join()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> multiprocessing, time, signal</span><br><span class="line"></span><br><span class="line">p = multiprocessing.Process(target=time.sleep, args=(<span class="number">1000</span>, ))</span><br><span class="line"><span class="built_in">print</span>(p, p.is_alive())</span><br><span class="line"></span><br><span class="line">p.start()</span><br><span class="line"><span class="built_in">print</span>(p, p.is_alive())</span><br><span class="line"></span><br><span class="line">p.terminate()</span><br><span class="line">time.sleep(<span class="number">0.1</span>)</span><br><span class="line"><span class="built_in">print</span>(p, p.is_alive())</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(p.exitcode == -signal.SIGTERM)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> multiprocessing <span class="keyword">as</span> mp</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">foo</span>(<span class="params">q</span>):</span><br><span class="line">    q.put(<span class="string">&#x27;hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    mp.set_start_method(<span class="string">&#x27;spawn&#x27;</span>)</span><br><span class="line">    q = mp.Queue()</span><br><span class="line">    p = mp.Process(target=foo, args=(q,))</span><br><span class="line">    p.start()</span><br><span class="line">    <span class="built_in">print</span>(q.get())</span><br><span class="line">    p.join()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool, TimeoutError</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">f</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> x*x</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">with</span> Pool(processes=<span class="number">4</span>) <span class="keyword">as</span> pool:</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(pool.<span class="built_in">map</span>(f, <span class="built_in">range</span>(<span class="number">10</span>)))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> pool.imap_unordered(f, <span class="built_in">range</span>(<span class="number">10</span>)):</span><br><span class="line">            <span class="built_in">print</span>(i)</span><br><span class="line"></span><br><span class="line">        res = pool.map_async(f, <span class="built_in">range</span>(<span class="number">10</span>))</span><br><span class="line">        <span class="built_in">print</span>(res.get(timeout=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">        res = pool.apply_async(f, (<span class="number">20</span>, ))</span><br><span class="line">        <span class="built_in">print</span>(res.get(timeout=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">        res = pool.apply_async(os.getpid, ())</span><br><span class="line">        <span class="built_in">print</span>(res.get(timeout=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">        multiple_results = [pool.apply_async(os.getpid, ()) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>)]</span><br><span class="line">        <span class="built_in">print</span>([res.get(timeout=<span class="number">1</span>) <span class="keyword">for</span> res <span class="keyword">in</span> multiple_results])</span><br><span class="line"></span><br><span class="line">        res = pool.apply_async(time.sleep, (<span class="number">10</span>, ))</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="built_in">print</span>(res.get(timeout=<span class="number">1</span>))</span><br><span class="line">        <span class="keyword">except</span> TimeoutError:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;We lacked patience and got a Timeout Err&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;work&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;pool end&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> abc</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Final</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MagicAPI</span>():</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">buy_or_sell</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;buy&quot;</span> <span class="keyword">if</span> random() &gt; <span class="number">0.5</span> <span class="keyword">else</span> <span class="string">&quot;sell&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TradingSystem</span>(abc.ABC):</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, api: MagicAPI, symbol: <span class="built_in">str</span>, time_frame: <span class="built_in">int</span>, </span></span><br><span class="line"><span class="params">                 system_id: <span class="built_in">int</span>, system_label: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line"></span><br><span class="line">        <span class="comment"># init api...</span></span><br><span class="line">        self.api = api</span><br><span class="line">        self.symbol = symbol</span><br><span class="line">        self.time_frame = time_frame</span><br><span class="line">        self.system_id = system_id</span><br><span class="line">        self.system_label = system_label</span><br><span class="line">        thread = threading.Thread(target=self.system_loop)</span><br><span class="line">        self.thread = thread</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;thread <span class="subst">&#123;self.system_id&#125;</span> start&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">        thread.start()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @abc.abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">place_buy_order</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span>        </span><br><span class="line"></span><br><span class="line"><span class="meta">    @abc.abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">place_sell_order</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @abc.abstractmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">system_loop</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GeniusTradingSystem</span>(<span class="title class_ inherited__">TradingSystem</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, system_id: <span class="built_in">int</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(MagicAPI(), <span class="string">&quot;IBM&quot;</span>, <span class="number">5</span>, system_id, <span class="string">&quot;SMART_AI_TS&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">place_buy_order</span>(<span class="params">self</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;ID <span class="subst">&#123;self.system_id&#125;</span>: buy&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">place_sell_order</span>(<span class="params">self</span>):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;ID <span class="subst">&#123;self.system_id&#125;</span>: sell&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">system_loop</span>(<span class="params">self</span>):</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line"></span><br><span class="line">            buy_or_sell: <span class="built_in">str</span> = self.api.buy_or_sell()</span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;buy&quot;</span> == buy_or_sell:</span><br><span class="line">                self.place_buy_order()</span><br><span class="line">            <span class="keyword">elif</span> <span class="string">&quot;sell&quot;</span> == buy_or_sell:</span><br><span class="line">                self.place_sell_order()</span><br><span class="line"></span><br><span class="line">            sleep(self.time_frame)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line"></span><br><span class="line">    NUMBER_OF_TRADING_SYSTEM: Final[<span class="built_in">int</span>] = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">    trading_systems = [GeniusTradingSystem(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(NUMBER_OF_TRADING_SYSTEM)]</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(NUMBER_OF_TRADING_SYSTEM):</span><br><span class="line">        trading_systems[i].thread.join()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首頁</a></li>
+         
+          <li><a href="/about/">關於</a></li>
+         
+          <li><a href="/archives/">文章</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://ja99-doge.github.io/2022/12/10/parallel_programming/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&text=Python平行化程式設計小筆記"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&is_video=false&description=Python平行化程式設計小筆記"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python平行化程式設計小筆記&body=Check out this article: https://ja99-doge.github.io/2022/12/10/parallel_programming/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&title=Python平行化程式設計小筆記"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://ja99-doge.github.io/2022/12/10/parallel_programming/&name=Python平行化程式設計小筆記&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://ja99-doge.github.io/2022/12/10/parallel_programming/&t=Python平行化程式設計小筆記"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 選單</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 文章目錄</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 頁首</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    JA99
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首頁</a></li><!--
+     --><!--
+       --><li><a href="/about/">關於</a></li><!--
+     --><!--
+       --><li><a href="/archives/">文章</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
